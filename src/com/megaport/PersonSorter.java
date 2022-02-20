@@ -39,8 +39,8 @@ public class PersonSorter {
 
         this.people.forEach(System.out::println);
 
-        String[] splitFileName = this.fileName.split("[.]");
-        File output = new File(splitFileName[0] + "-sorted." + splitFileName[1]);
+        String trimFileName = this.fileName.substring(0, this.fileName.length() - 4);
+        File output = new File(trimFileName + "-sorted.txt");
         System.out.println("Finished: " + output.getName());
 
         List<String> outputText = this.people.stream().map(Person::toString).toList();

@@ -2,10 +2,13 @@ package com.megaport.test;
 
 import com.megaport.Person;
 import com.megaport.PersonSorter;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -14,10 +17,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PersonSorterTest {
     PersonSorter personSorter;
+    private ByteArrayOutputStream testOut;
+    private PrintStream originalOut;
 
     @BeforeEach
     void setUp() {
+        originalOut = System.out;
+        testOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(testOut));
+
         personSorter = new PersonSorter();
+    }
+
+    @AfterEach
+    public void restoreStreams() {
+        System.setOut(originalOut);
     }
 
     @Test
@@ -62,5 +76,12 @@ class PersonSorterTest {
             error.printStackTrace();
         }
 
+        String expectedOut = "Eagen, Barry" + System.lineSeparator() +
+                "Melhem, Bobby" + System.lineSeparator() +
+                "Melhem, Jada" + System.lineSeparator() +
+                "Smith, Ben" + System.lineSeparator() +
+                "Smith, John" + System.lineSeparator() +
+                "Finished: input2-sorted.txt" + System.lineSeparator();
+        assertEquals(expectedOut, testOut.toString());
     }
 }
