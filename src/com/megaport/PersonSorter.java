@@ -1,19 +1,49 @@
 package com.megaport;
 
+import java.io.File;
 import java.util.List;
 
+/**
+ * Handles the sorting and saving of the people.
+ */
 public class PersonSorter {
+    private final FileUtility fileUtility;
+    public String fileName;
+    public List<Person> people;
 
-    public static void main(String[] args) throws Exception {
-        FileUtility<Person> fileUtility = new FileUtility<>();
+    /**
+     * Creates the fileUtility for the person sorter.
+     */
+    public PersonSorter() {
+        this.fileUtility = new FileUtility();
+    }
 
-        if (args.length != 1) {
-            throw new Exception("Proper Usage is: java program filename");
+    /**
+     * Sorts the given file and updates the people list.
+     * @param path the file path with people to sort.
+     */
+    public void sortFile(String path) {
+        this.fileName = path;
+        List<String> inputText = this.fileUtility.readFile(this.fileName);
+        this.people = inputText.stream().map(Person::new).sorted().toList();
+    }
+
+    /**
+     * Saves the current list of people to a separate sorted file.
+     */
+    public void saveFile() {
+        if (this.fileName == null) {
+            System.err.println("No input file provided.");
+            return;
         }
-        List<String> text = fileUtility.readFile(args[0]);
 
-        List<Person> people = text.stream().map(Person::new).sorted().toList();
-        people.forEach(System.out::println);
-        fileUtility.writeFile(people);
+        this.people.forEach(System.out::println);
+
+        String[] splitFileName = this.fileName.split("[.]");
+        File output = new File(splitFileName[0] + "-sorted." + splitFileName[1]);
+        System.out.println("Finished: " + output.getName());
+
+        List<String> outputText = this.people.stream().map(Person::toString).toList();
+        this.fileUtility.writeFile(output.getAbsolutePath(), outputText);
     }
 }
